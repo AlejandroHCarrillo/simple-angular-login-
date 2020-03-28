@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { usuarioModel } from '../models/usuario.model';
-// import { map } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -35,14 +35,14 @@ export class AuthService {
     return this.http.post(`${this.url}signInWithPassword?key=${this.apikey}`, 
                             authData
     )
-    // .pipe(
-    //   map( resp => {
-    //     console.log('into the map on registro');
+    .pipe(
+      map( resp => {
+        console.log('into the map on registro');
         
-    //     this.guardarToken(resp['idToken']);
-    //     return resp;
-    //   })
-    // )
+        this.guardarToken(resp['idToken']);
+        return resp;
+      })
+    )
   }
   
   nuevoUsuario(usuario:usuarioModel){
@@ -57,14 +57,14 @@ export class AuthService {
     return this.http.post(`${this.url}signUp?key=${this.apikey}`, 
                             authData
     )
-    // .pipe(
-    //   map( resp => {
-    //     console.log('into the map on login');
+    .pipe(
+      map( resp => {
+        console.log('into the map on login');
         
-    //     this.guardarToken(resp['idToken']);
-    //     return resp;
-    //   })
-    // )
+        this.guardarToken(resp['idToken']);
+        return resp;
+      })
+    )
   }
 
   private guardarToken(idToken:string){
@@ -79,5 +79,9 @@ export class AuthService {
       this.userToken = '';
     }
     return this.userToken;
+  }
+
+  estaAutenticado():boolean {
+      return this.userToken.length>2;
   }
 }
