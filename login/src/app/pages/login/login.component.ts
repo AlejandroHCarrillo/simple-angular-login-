@@ -12,12 +12,15 @@ import { Router } from '@angular/router';
 })
 export class LoginComponent implements OnInit {
   usuario: usuarioModel = new usuarioModel;
+  recordarUsuario = false;
 
   constructor(private auth: AuthService, private router:Router) { }
 
   ngOnInit() {
-    this.usuario.email = "";
-    this.usuario.password = "";
+    if(localStorage.getItem('email')){
+      this.usuario.email =  localStorage.getItem('email');
+      this.recordarUsuario = true;
+    }
   }
 
   login(form: NgForm){
@@ -32,7 +35,7 @@ export class LoginComponent implements OnInit {
       text: 'Por favor espere',
       icon: 'info',
       allowOutsideClick: false,
-      confirmButtonText: 'Cool'
+      confirmButtonText: 'Procesando...'
     });
     Swal.showLoading();
 
@@ -40,6 +43,9 @@ export class LoginComponent implements OnInit {
       .subscribe(resp => {
       console.log(resp);
       Swal.close();
+      if(this.recordarUsuario){
+        localStorage.setItem('email', this.usuario.email);
+      }
       this.router.navigateByUrl('/home');
     },(err) =>{
       console.log(err.error.error.message);
@@ -48,7 +54,7 @@ export class LoginComponent implements OnInit {
         text: err.error.error.message,
         icon: 'error',
         allowOutsideClick: true,
-        confirmButtonText: 'Hot'
+        confirmButtonText: 'Ok'
       });  
     });
 

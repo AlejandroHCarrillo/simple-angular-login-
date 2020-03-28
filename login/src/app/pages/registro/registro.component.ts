@@ -14,6 +14,8 @@ import Swal from 'sweetalert2';
 export class RegistroComponent implements OnInit {
 
   usuario: usuarioModel;
+  recordarUsuario= false;
+
   constructor(private auth: AuthService, private router: Router) { }
 
   ngOnInit() {
@@ -33,18 +35,18 @@ export class RegistroComponent implements OnInit {
       text: 'Por favor espere',
       icon: 'info',
       allowOutsideClick: false,
-      confirmButtonText: 'Cool'
+      confirmButtonText: 'Procesando..'
     });
     Swal.showLoading();
-
 
     this.auth.nuevoUsuario(this.usuario)
     .subscribe( resp => { 
       console.log(resp);
       Swal.close();
-      
+      if(this.recordarUsuario){
+        localStorage.setItem('email', this.usuario.email);
+      }
       this.router.navigateByUrl('/home');
-
     },(err) =>{
       console.log(err.error.error.message);
       Swal.fire({
@@ -52,7 +54,7 @@ export class RegistroComponent implements OnInit {
         text: err.error.error.message,
         icon: 'error',
         allowOutsideClick: true,
-        confirmButtonText: 'Hot'
+        confirmButtonText: 'Ok'
       });
 
     });
