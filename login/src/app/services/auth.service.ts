@@ -12,12 +12,6 @@ export class AuthService {
   
   userToken:string;
   
-  // Crear nuevo usuario
-  // /signUp?key=[API_KEY]
-
-  // Log in usuario
-  // signInWithPassword?key=[API_KEY]
-
   constructor(private http: HttpClient) { 
     this.leerToken();
   }
@@ -47,9 +41,6 @@ export class AuthService {
   
   nuevoUsuario(usuario:usuarioModel){
     const authData = {
-      // email:usuario.email,
-      // password: usuario.password,
-      // nombre: usuario.nombre,
       ...usuario,
       returnSecureToken:true
     }
@@ -70,6 +61,10 @@ export class AuthService {
   private guardarToken(idToken:string){
     this.userToken = idToken;
     localStorage.setItem('token', idToken);
+    let hoy = new Date(); // Obtenemos la fecha actual con minutos y segundos
+    hoy.setSeconds(3600); //Agregamos 1 hora a la fecha actual 
+    
+    localStorage.setItem('expira', hoy.getTime().toString());
   }
 
   leerToken(){
@@ -82,6 +77,13 @@ export class AuthService {
   }
 
   estaAutenticado():boolean {
-      return this.userToken.length>2;
+      if(this.userToken.length<2){
+        return false;
+      }
+
+      const expira = Number(localStorage.getItem('expira'));
+      const expirationDate = new Date(expira);
+
+      return expirationDate > new Date; // Si la fecha de expiracion es mayor a la fecha actual, todavia esta autenticado.
   }
 }
